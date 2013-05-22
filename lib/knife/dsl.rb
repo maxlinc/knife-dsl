@@ -32,21 +32,21 @@ module Chef::Knife::DSL
 
     warn = $VERBOSE 
     $VERBOSE = nil
-    stderr, stdout, stdin = STDERR, STDOUT, STDIN
+    old_stderr, old_stdout, old_stdin = $stderr, $stdout, $stdin
 
-    Object.const_set("STDERR", StringIO.new('', 'r+'))
-    Object.const_set("STDOUT", StringIO.new('', 'r+'))
-    Object.const_set("STDIN", input ? StringIO.new(input, 'r') : null)
+    $stderr = StringIO.new('', 'r+')
+    $stdout = StringIO.new('', 'r+')
+    $stdin = input ? StringIO.new(input, 'r') : null
     $VERBOSE = warn
 
     status = Chef::Knife::DSL::Support.run_knife(command, args)
-    return STDOUT.string, STDERR.string, status
+    return $stdout.string, $stderr.string, status
   ensure
     warn = $VERBOSE 
     $VERBOSE = nil
-    Object.const_set("STDERR", stderr)
-    Object.const_set("STDOUT", stdout)
-    Object.const_set("STDIN", stdin)
+    $stderr = old_stderr
+    $stdout = old_stdout
+    $stdin = old_stdin
     $VERBOSE = warn
     null.close
   end

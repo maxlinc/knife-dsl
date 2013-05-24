@@ -30,6 +30,11 @@ module Chef::Knife::DSL
   def knife_capture(command, args=[], input=nil)
     null = Gem.win_platform? ? File.open('NUL:', 'r') : File.open('/dev/null', 'r')
 
+    if defined? Pry
+      Pry.config.input = STDIN
+      Pry.config.output = STDOUT
+    end
+
     warn = $VERBOSE 
     $VERBOSE = nil
     old_stderr, old_stdout, old_stdin = $stderr, $stdout, $stdin
